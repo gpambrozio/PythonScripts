@@ -26,4 +26,4 @@ To use the script place your screenshot files in the same folder as the script a
 
 ### Changing the iPhone image
 
-To use a different image or to adapt the script for an iPad screen for example, change the image or the name of the image in the script and change the coordinates used to paste the original screen shots. I plan to automate this step by analyzing the image and finding the transparent rectangle in the middle but so far this is a manual step.
+To use a different image or to adapt the script for an iPad screen for example, change the EmptyiPhone image or the name of the image in the script and change the coordinates used to paste the original screen shots. I plan to automate this step by analyzing the image and finding the transparent rectangle in the middle but so far this is a manual step.
