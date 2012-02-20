@@ -27,3 +27,23 @@ To use the script place your screenshot files in the same folder as the script a
 ### Changing the iPhone image
 
 To use a different image or to adapt the script for an iPad screen for example, change the EmptyiPhone image or the name of the image in the script and change the coordinates used to paste the original screen shots. I plan to automate this step by analyzing the image and finding the transparent rectangle in the middle but so far this is a manual step.
+
+## PythonDocs2DocSet
+
+Simple script to turn Python's HTML documentation into a docset that can be browsed and quickly searched using the [Dash OSX app](http://kapeli.com/dash/). You can read about my motivations and how to go about it in [the blog post I wrote about it](http://blog.codecropper.com/2012/02/pythons-documentation-at-your-fingertips/).
+
+### Pre-requisites
+
+This script uses BeautifulSoup (http://www.crummy.com/software/BeautifulSoup/). The easiest way to install it is using pip:
+
+    sudo pip install beautifulsoup4
+
+### Using the script
+
+* Download the documentation for the version you want [here](http://www.python.org/doc/versions/). You should download the zip file for the HTML version of the docs.
+* Expand the documentation somewhere.
+* Open terminal and cd to the folder where you expanded the docs.
+* Run the script from this folder.
+* The script will create a python.docset bundle with all the necessary files.
+* Move the python.docset bundle to some folder. I recommend ~/Library/Developer/Shared/Documentation/DocSets
+* Use it!
