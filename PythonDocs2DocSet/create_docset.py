@@ -7,20 +7,36 @@ import shutil
 import subprocess
 from bs4 import BeautifulSoup
 
-source_folder = os.getcwd() + "/"
-dest_folder = source_folder + "python.docset/"
+## Tries to find docsetutil
 possible_docsetutil_path = [
     "/Developer/usr/bin/docsetutil",
     "/Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil",
 ]
-
-## Tries to find docsetutil
 docsetutil_path = [path for path in possible_docsetutil_path if os.path.exists(path)]
 if len(docsetutil_path) == 0:
     print "Could not find docsetutil. Please check for docsetutil's location and set it inside the script."
     exit(1)
 
 docsetutil_path = docsetutil_path[0]
+
+## Script should run in the folder where the docs live
+source_folder = os.getcwd() + "/"
+
+## Find the Python version of the docs
+python_version = None
+f = open(source_folder + "index.html", 'r')
+for line in f:
+    search = re.search("Python v([0-9.]+) documentation", line)
+    if search:
+        python_version = search.group(1)
+        break
+f.close()
+
+if python_version == None:
+    print "I could not find Python's version in the index.html file. Are you in the right folder??"
+    exit(1)
+
+dest_folder = source_folder + ("python.%s.docset/" % python_version)
 
 
 def is_something(tag, something):
@@ -69,14 +85,14 @@ info.write("""<?xml version="1.0" encoding="UTF-8"?>
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>python.2.7</string>
+    <string>python.%s</string>
     <key>CFBundleName</key>
-    <string>Python 2.7</string>
+    <string>Python %s</string>
     <key>DocSetPlatformFamily</key>
     <string>python</string>
 </dict>
 </plist>
-""")
+""" % (python_version, python_version))
 info.close()
 
 ## Create Nodes.xml
