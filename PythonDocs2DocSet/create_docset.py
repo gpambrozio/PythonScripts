@@ -26,7 +26,7 @@ source_folder = os.getcwd() + "/"
 python_version = None
 f = open(source_folder + "index.html", 'r')
 for line in f:
-    search = re.search("Python v([0-9.]+) documentation", line)
+    search = re.search("dash; (.*?) documentation</title>", line)
     if search:
         python_version = search.group(1)
         break
@@ -36,7 +36,8 @@ if python_version == None:
     print "I could not find Python's version in the index.html file. Are you in the right folder??"
     exit(1)
 
-dest_folder = source_folder + ("python.%s.docset/" % python_version)
+docset_name = python_version.strip().lower().replace(" ","_")
+dest_folder = source_folder + ("%s.docset/" % docset_name)
 
 
 def is_something(tag, something):
@@ -58,6 +59,14 @@ def collect(soup, what, identifier, names):
         names.append(apple_ref)
 
 
+def find_existing_file(possible):
+    path = [path for path in possible if os.path.exists(source_folder + path)]
+    if len(path) == 0:
+        print "Could not find %s. Please check your doc folder structure and try again." % " or ".join(possible)
+        exit(2)
+    return path[0]
+    
+    
 ## Clean up first
 if os.path.exists(dest_folder):
     shutil.rmtree(dest_folder)
@@ -68,15 +77,15 @@ docset_folder = dest_folder
 dest_folder = dest_folder + "Contents/"
 
 ## Find the module's index file. It's different in Python's 3 docs
-possible_modindex_path = [
+modindex_path = find_existing_file( [
     "modindex.html",
     "py-modindex.html",
-]
-modindex_path = [path for path in possible_modindex_path if os.path.exists(source_folder + path)]
-if len(modindex_path) == 0:
-    print "Could not find modindex. Please check your doc folder structure and try again."
-    exit(2)
-modindex_path = modindex_path[0]
+])
+
+genindex_path = find_existing_file([
+    "genindex-all.html",
+    "genindex.html",
+])
 
 ## Create Info.plist
 info = open(dest_folder + "Info.plist", "w")
@@ -87,12 +96,12 @@ info.write("""<?xml version="1.0" encoding="UTF-8"?>
     <key>CFBundleIdentifier</key>
     <string>python.%s</string>
     <key>CFBundleName</key>
-    <string>Python %s</string>
+    <string>%s</string>
     <key>DocSetPlatformFamily</key>
     <string>python</string>
 </dict>
 </plist>
-""" % (python_version, python_version))
+""" % (python_version.strip().lower().replace(" ","."), python_version.strip()))
 info.close()
 
 ## Create Nodes.xml
@@ -117,8 +126,9 @@ dest_folder = dest_folder + "Documents/"
 ## Copy some static files
 shutil.copy(source_folder + "searchindex.js", dest_folder)
 shutil.copy(source_folder + modindex_path, dest_folder)
-shutil.copy(source_folder + "genindex-all.html", dest_folder)
-shutil.copy(source_folder + "library/index.html", dest_folder)
+shutil.copy(source_folder + genindex_path, dest_folder)
+if os.path.exists(source_folder + "library/index.html"):
+    shutil.copy(source_folder + "library/index.html", dest_folder)
 shutil.copytree(source_folder + "_images", dest_folder + "_images")
 shutil.copytree(source_folder + "_static", dest_folder + "_static")
 
@@ -155,7 +165,7 @@ for line in f:
 f.close()
 
 ## Collect pages from the general index
-f = open(source_folder + "genindex-all.html", 'r')
+f = open(source_folder + genindex_path, 'r')
 for line in f:
     for search in re.finditer("(<dt>|, )<a href=\"([^#]+).*?\">", line):
         href = search.group(2)
@@ -165,14 +175,15 @@ for line in f:
 f.close()
 
 ## Collect pages from the library index
-f = open(source_folder + "library/index.html", 'r')
-for line in f:
-    for search in re.finditer("<a class=\"reference external\" href=\"([^#\"]+).*?\">", line):
-        href = "library/" + search.group(1)
-        if not ("http://" in href or "https://" in href or href in pages):
-            pages[href] = []
+if os.path.exists(source_folder + "library/index.html"):
+    f = open(source_folder + "library/index.html", 'r')
+    for line in f:
+        for search in re.finditer("<a class=\"reference external\" href=\"([^#\"]+).*?\">", line):
+            href = "library/" + search.group(1)
+            if not ("http://" in href or "https://" in href or href in pages):
+                pages[href] = []
 
-f.close()
+    f.close()
 
 ## Now write to tokens
 for href, names in pages.items():
