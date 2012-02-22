@@ -136,9 +136,11 @@ shutil.copytree(source_folder + "_static", dest_folder + "_static")
 ## and messes up Dash
 css = open(dest_folder + "_static/basic.css", "a+")
 css.write("div.related {display:none;}\n")
+css.write("div.sphinxsidebar {display:none;}\n")
 css.close()
 css = open(dest_folder + "_static/default.css", "a+")
 css.write("a.headerlink {display:none;}\n")
+css.write("div.bodywrapper {margin: 0 0 0 0px;}")
 css.close()
 
 ## Start of the tokens file
@@ -196,6 +198,32 @@ for href, names in pages.items():
     collect(soup, "function", "func", names)
     collect(soup, "exception", "cl", names)
     collect(soup, "attribute", "instp", names)
+    
+    ## This adds some hidden tags that makes Dash display this page's
+    ## TOC on the left side of the screen, just like with iOS and OSX docs
+    toc = soup.find('div', 'sphinxsidebarwrapper').findAll("a", "reference")
+    if len(toc) > 0:
+        toc_tag = soup.new_tag("div", style="display:none;")
+        soup.body.append(toc_tag)
+        a_tag = soup.new_tag("a")
+        a_tag["name"] = "#"
+        toc_tag.append(a_tag)
+        h3_tag = soup.new_tag("h3")
+        h3_tag["class"] = "tasks"
+        h3_tag.append("TOC")
+        toc_tag.append(h3_tag)
+        ul_tag = soup.new_tag("ul")
+        ul_tag["class"] = "tooltip"
+        toc_tag.append(ul_tag)
+        
+        for t in toc:
+            li_tag = soup.new_tag("li")
+            li_tag["class"] = "tooltip"
+            ul_tag.append(li_tag)
+            a_tag = soup.new_tag("a")
+            a_tag["href"] = t['href']
+            a_tag.append(t.text)
+            li_tag.append(a_tag)
 
     if len(names) > 0:
         tokens.write("<File path=\"%s\">\n" % href)
