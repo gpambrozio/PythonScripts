@@ -12,9 +12,12 @@ possible_docsetutil_path = [
     "/Developer/usr/bin/docsetutil",
     "/Applications/Xcode.app/Contents/Developer/usr/bin/docsetutil",
 ]
-docsetutil_path = [path for path in possible_docsetutil_path if os.path.exists(path)]
+docsetutil_path = [path
+                    for path in possible_docsetutil_path
+                    if os.path.exists(path)]
 if len(docsetutil_path) == 0:
-    print "Could not find docsetutil. Please check for docsetutil's location and set it inside the script."
+    print ("Could not find docsetutil. Please check for docsetutil's "
+           "location and set it inside the script.")
     exit(1)
 
 docsetutil_path = docsetutil_path[0]
@@ -33,10 +36,11 @@ for line in f:
 f.close()
 
 if python_version == None:
-    print "I could not find Python's version in the index.html file. Are you in the right folder??"
+    print ("I could not find Python's version in the index.html "
+           "file. Are you in the right folder??")
     exit(1)
 
-docset_name = python_version.strip().lower().replace(" ","_")
+docset_name = python_version.strip().lower().replace(" ", "_")
 dest_folder = source_folder + ("%s.docset/" % docset_name)
 
 
@@ -62,11 +66,12 @@ def collect(soup, what, identifier, names):
 def find_existing_file(possible):
     path = [path for path in possible if os.path.exists(source_folder + path)]
     if len(path) == 0:
-        print "Could not find %s. Please check your doc folder structure and try again." % " or ".join(possible)
+        print ("Could not find %s. Please check your doc folder structure and "
+               "try again." % " or ".join(possible))
         exit(2)
     return path[0]
-    
-    
+
+
 ## Clean up first
 if os.path.exists(dest_folder):
     shutil.rmtree(dest_folder)
@@ -77,7 +82,7 @@ docset_folder = dest_folder
 dest_folder = dest_folder + "Contents/"
 
 ## Find the module's index file. It's different in Python's 3 docs
-modindex_path = find_existing_file( [
+modindex_path = find_existing_file([
     "modindex.html",
     "py-modindex.html",
 ])
@@ -101,7 +106,7 @@ info.write("""<?xml version="1.0" encoding="UTF-8"?>
     <string>python</string>
 </dict>
 </plist>
-""" % (python_version.strip().lower().replace(" ","."), python_version.strip()))
+""" % (python_version.strip().lower().replace(" ", "."), python_version.strip()))
 info.close()
 
 ## Create Nodes.xml
@@ -198,7 +203,7 @@ for href, names in pages.items():
     collect(soup, "function", "func", names)
     collect(soup, "exception", "cl", names)
     collect(soup, "attribute", "instp", names)
-    
+
     ## This adds some hidden tags that makes Dash display this page's
     ## TOC on the left side of the screen, just like with iOS and OSX docs
     toc = soup.find('div', 'sphinxsidebarwrapper').findAll("a", "reference")
@@ -215,7 +220,7 @@ for href, names in pages.items():
         ul_tag = soup.new_tag("ul")
         ul_tag["class"] = "tooltip"
         toc_tag.append(ul_tag)
-        
+
         for t in toc:
             li_tag = soup.new_tag("li")
             li_tag["class"] = "tooltip"
