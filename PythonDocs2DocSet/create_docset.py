@@ -33,6 +33,10 @@ for line in f:
     if search:
         python_version = search.group(1)
         break
+    search = re.search("<title>.*?dash; (.*? v[^ <]+) ", line)
+    if search:
+        python_version = search.group(1)
+        break
 f.close()
 
 if python_version == None:
