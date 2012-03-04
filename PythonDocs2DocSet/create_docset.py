@@ -205,6 +205,11 @@ with codecs.open(token_path, "w", encoding="utf-8" ) as tokens:
         counter += 1
 
         soup = None
+
+        if not os.path.exists (os.path.join(source_folder, href)):
+          print ("  -- not found")
+          continue
+
         with codecs.open(os.path.join(source_folder, href), "r", encoding="utf-8") as tmp:
             soup = BeautifulSoup(tmp)
 
