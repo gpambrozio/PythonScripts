@@ -4,6 +4,10 @@ I've been playing with Python for a few weeks now and, at least for scripting jo
 
 This is my collection of Python scripts that maybe someone might like to use. They'll be inside folders when there's more than one file needed or on the root when it's a simple one file script.
 
+# License
+
+Unless otherwise noted in the source file, everything is MIT licensed.
+
 ## iPhoneScreenshotsComposer
 
 Simple script to turn screenshots taken from the iPhone simulator or from an iPhone and composing it with an iPhone4 image:
