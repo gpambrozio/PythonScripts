@@ -248,10 +248,10 @@ with codecs.open(token_path, "w", encoding="utf-8" ) as tokens:
 
         # As reported by Dash's author: Module references (added as categories)
         # do not have proper anchor in the html files, so I have to add them.
-        for module in soup.findAll("a", "reference", href=re.compile(r'^#module-.+$')):
+        for module in soup.findAll(["div", "span"], id=re.compile(r'^module-.+$')):
             a_tag = soup.new_tag("a")
-            a_tag["name"] = "//apple_ref/cpp/cat/%s" % module["href"][8:]
-            module.parent.insert(0, a_tag)
+            a_tag["name"] = "//apple_ref/cpp/cat/%s" % module["id"][7:]
+            module.insert(0, a_tag)
 
         if len(names) > 0:
             tokens.write("<File path=\"%s\">\n" % href)
