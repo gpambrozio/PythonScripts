@@ -167,7 +167,7 @@ with codecs.open(os.path.join(source_folder, modindex_path), 'r', encoding="utf-
             if not href in pages:
                 pages[href] = []
 
-            apple_ref = "//apple_ref/cpp/cat/%s" % name
+            apple_ref = "//apple_ref/cpp/Module/%s" % name
             pages[href].append(apple_ref)
 
 
@@ -217,8 +217,8 @@ with codecs.open(token_path, "w", encoding="utf-8" ) as tokens:
         collect(soup, "method", "clm", names)
         collect(soup, "classmethod", "clm", names)
         collect(soup, "function", "func", names)
-        collect(soup, "exception", "cl", names)
-        collect(soup, "attribute", "instp", names)
+        collect(soup, "exception", "Exception", names)
+        collect(soup, "attribute", "Attribute", names)
 
         ## This adds some hidden tags that makes Dash display this page's
         ## TOC on the left side of the screen, just like with iOS and OSX docs
@@ -250,7 +250,7 @@ with codecs.open(token_path, "w", encoding="utf-8" ) as tokens:
         # do not have proper anchor in the html files, so I have to add them.
         for module in soup.findAll(["div", "span"], id=re.compile(r'^module-.+$')):
             a_tag = soup.new_tag("a")
-            a_tag["name"] = "//apple_ref/cpp/cat/%s" % module["id"][7:]
+            a_tag["name"] = "//apple_ref/cpp/Module/%s" % module["id"][7:]
             module.insert(0, a_tag)
 
         if len(names) > 0:
